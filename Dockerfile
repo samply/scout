@@ -24,11 +24,7 @@ RUN --mount=type=cache,target=/usr/src/app/target \
     --mount=type=cache,target=/usr/local/cargo/registry \
     dx bundle --platform web --out-dir bundle
 
-FROM debian:stable-slim
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
+FROM gcr.io/distroless/cc-debian12
 
 COPY --from=builder /usr/src/app/bundle .
 COPY codesystems codesystems
