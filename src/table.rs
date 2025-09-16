@@ -206,9 +206,8 @@ pub fn Table(props: TableProps) -> Element {
         }
         div {
             class: "grid gap-px p-px m-4",
-            style: "grid-template-columns: max-content repeat({custom_columns().len()}, auto) max-content",
+            style: "grid-template-columns: repeat({custom_columns().len()}, auto)",
             div { class: "grid grid-cols-subgrid col-span-full",
-                div { class: "outline outline-gray-300 px-2 py-1 bg-gray-100" }
                 for (i , idx , header) in custom_columns()
                     .iter()
                     .enumerate()
@@ -361,7 +360,6 @@ pub fn Table(props: TableProps) -> Element {
                         }
                     }
                 }
-                div { class: "outline outline-gray-300 px-2 py-1 bg-gray-100" }
                 // Dragover indicator
                 if let DragState::Dragover(_, i) = drag_state() {
                     div {
@@ -405,30 +403,14 @@ pub fn Table(props: TableProps) -> Element {
                 }
             }
             for (id , row) in filtered_data().into_iter() {
-                div { class: "grid grid-cols-subgrid col-span-full",
-                    label { class: "outline outline-gray-300 px-2 py-1 flex items-center",
-                        input { r#type: "checkbox" }
-                    }
+                div { class: "grid grid-cols-subgrid col-span-full hover:bg-gray-50",
                     for cell in row.iter() {
-                        div { class: "outline outline-gray-300 px-2 py-1", "{cell}" }
-                    }
-                    button {
-                        class: "outline outline-gray-300 px-2 py-1",
-                        onclick: move |_| {
-                            (props.ondetail)(id);
-                        },
-                        svg {
-                            "viewBox": "0 0 24 24",
-                            "stroke-width": "1.5",
-                            xmlns: "http://www.w3.org/2000/svg",
-                            stroke: "currentColor",
-                            fill: "none",
-                            class: "size-6",
-                            path {
-                                "stroke-linejoin": "round",
-                                d: "m8.25 4.5 7.5 7.5-7.5 7.5",
-                                "stroke-linecap": "round",
-                            }
+                        div {
+                            class: "outline outline-gray-300 px-2 py-1",
+                            onclick: move |_| {
+                                (props.ondetail)(id);
+                            },
+                            "{cell}"
                         }
                     }
                 }
