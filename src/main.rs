@@ -177,7 +177,7 @@ fn PatientView(id: String) -> Element {
                                     class: "my-3 p-2 border rounded",
                                     class: if condition.is_neoplasm() { "border-orange-300 bg-orange-50" } else { "border-gray-300 bg-gray-50" },
                                     div { class: "flex items-center flex-wrap gap-1",
-                                        span { class: "font-bold", "Condition" }
+                                        span { class: "font-bold", "⚕️ Condition" }
                                         OptionalChip { chip: condition.clinical_status_chip() }
                                         OptionalChip { chip: condition.verification_status_chip() }
                                         if condition.is_neoplasm() {
@@ -212,7 +212,7 @@ fn PatientView(id: String) -> Element {
                                     class: "my-3 p-2 border rounded",
                                     class: if procedure.is_radiation_therapy_or_nuclear_medicine_therapy_or_chemotherapy() { "border-orange-300 bg-orange-50" } else { "border-gray-300 bg-gray-50" },
                                     div { class: "flex items-center flex-wrap gap-1",
-                                        span { class: "font-bold", "Procedure" }
+                                        span { class: "font-bold", "💉 Procedure" }
                                         OptionalChip { chip: procedure.status_chip() }
                                         if procedure.is_radiation_therapy_or_nuclear_medicine_therapy_or_chemotherapy() {
                                             div {
@@ -245,7 +245,7 @@ fn PatientView(id: String) -> Element {
                             rsx! {
                                 div { class: "my-3 p-2 border rounded border-gray-300 bg-gray-50",
                                     p {
-                                        span { class: "font-bold", "Lab result" }
+                                        span { class: "font-bold", "🧪 Lab result" }
                                         OptionalChip { chip: observation.status_chip() }
                                     }
                                     time { class: "text-sm text-gray-600", "{format_timestamp(timestamp)}" }
