@@ -19,7 +19,7 @@ impl crate::serverfn::RequestBuilderExt for reqwest::RequestBuilder {
 
 #[server]
 pub async fn get_patients() -> Result<Vec<fhir::Patient>, ServerFnError> {
-    let url = format!("{}/Patient", server::config().fhir_base_url);
+    let url = format!("{}/Patient?_count=10000", server::config().fhir_base_url);
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(server::config().accept_invalid_certs)
         .build()?;
