@@ -69,12 +69,14 @@ fn PatientTable() -> Element {
                 ],
                 data: patients
                     .iter()
-                    .map(|p| vec![p.id(), p.gender(), p.birth_date(), p.deceased(), p.address()])
+                    .map(|p| {
+                        vec![p.id.to_string(), p.gender(), p.birth_date(), p.deceased(), p.address()]
+                    })
                     .collect(),
                 ondetail: {
                     let patients = patients.clone();
-                    move |id: usize| {
-                        let id = patients[id].id();
+                    move |idx: usize| {
+                        let id = patients[idx].id.to_string();
                         navigator().push(Route::PatientView { id });
                     }
                 },

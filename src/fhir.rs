@@ -76,7 +76,7 @@ impl fmt::Display for Address {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Patient {
-    pub id: Option<String>,
+    pub id: String,
     pub name: Option<Vec<HumanName>>,
     pub gender: Option<String>,
     pub birth_date: Option<String>,
@@ -85,10 +85,6 @@ pub struct Patient {
 }
 
 impl Patient {
-    pub fn id(&self) -> String {
-        self.id.clone().unwrap_or_default()
-    }
-
     pub fn name(&self) -> String {
         self.name
             .iter()
@@ -248,7 +244,7 @@ pub struct Annotation {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Encounter {
-    pub id: Option<String>,
+    pub id: String,
     pub identifier: Option<Vec<Identifier>>,
     pub status: String,
     pub class: Coding,
@@ -259,10 +255,6 @@ pub struct Encounter {
 }
 
 impl Encounter {
-    pub fn id(&self) -> String {
-        self.id.clone().unwrap_or_default()
-    }
-
     pub fn visit_number(&self) -> String {
         self.identifier
             .iter()
@@ -350,7 +342,7 @@ impl Encounter {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Condition {
-    pub id: Option<String>,
+    pub id: String,
     pub clinical_status: Option<CodeableConcept>,
     pub verification_status: Option<CodeableConcept>,
     pub code: CodeableConcept,
@@ -362,10 +354,6 @@ pub struct Condition {
 }
 
 impl Condition {
-    pub fn id(&self) -> String {
-        self.id.clone().unwrap_or_default()
-    }
-
     /// http://hl7.org/fhir/ValueSet/condition-clinical
     #[rustfmt::skip]
     pub fn clinical_status_chip(&self) -> Option<Chip> {
@@ -445,7 +433,7 @@ impl Condition {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Procedure {
-    pub id: Option<String>,
+    pub id: String,
     pub status: String,
     pub category: Option<CodeableConcept>,
     pub code: CodeableConcept,
@@ -456,10 +444,6 @@ pub struct Procedure {
 }
 
 impl Procedure {
-    pub fn id(&self) -> String {
-        self.id.clone().unwrap_or_default()
-    }
-
     /// http://hl7.org/fhir/ValueSet/event-status
     #[rustfmt::skip]
     pub fn status_chip(&self) -> Option<Chip> {
@@ -553,7 +537,7 @@ impl Quantity {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Observation {
-    pub id: Option<String>,
+    pub id: String,
     pub identifier: Vec<Identifier>,
     pub status: String,
     pub category: Vec<CodeableConcept>,
@@ -577,10 +561,6 @@ pub struct ObservationReferenceRange {
 }
 
 impl Observation {
-    pub fn id(&self) -> String {
-        self.id.clone().unwrap_or_default()
-    }
-
     pub fn identifier(&self) -> String {
         self.identifier
             .iter()
