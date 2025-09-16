@@ -347,6 +347,7 @@ pub struct Condition {
     pub verification_status: Option<CodeableConcept>,
     pub code: CodeableConcept,
     pub body_site: Option<Vec<CodeableConcept>>,
+    pub subject: Reference,
     pub onset_period: Option<Period>,
     pub onset_date_time: Option<jiff::Timestamp>,
     pub recorded_date: jiff::Timestamp,
@@ -407,6 +408,14 @@ impl Condition {
             .map(|site| site.to_string())
             .collect::<Vec<_>>()
             .join(", ")
+    }
+
+    pub fn subject_patient_id(&self) -> Option<String> {
+        self.subject
+            .reference
+            .as_ref()
+            .and_then(|r| r.strip_prefix("Patient/"))
+            .map(|id| id.to_string())
     }
 
     pub fn note(&self) -> String {

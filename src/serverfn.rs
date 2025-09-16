@@ -38,6 +38,27 @@ pub async fn get_patients() -> Result<Vec<fhir::Patient>, ServerFnError> {
         .collect())
 }
 
+#[server]
+pub async fn get_conditions() -> Result<Vec<fhir::Condition>, ServerFnError> {
+    let url = format!("{}/Condition?_count=10000", server::config().fhir_base_url);
+    let client = reqwest::Client::builder()
+        .danger_accept_invalid_certs(server::config().accept_invalid_certs)
+        .build()?;
+    let bundle = client
+        .get(&url)
+        .with_auth()
+        .send()
+        .await?
+        .error_for_status()?
+        .json::<fhir::FhirBundle<fhir::Condition>>()
+        .await?;
+    Ok(bundle
+        .entry
+        .into_iter()
+        .map(|entry| entry.resource)
+        .collect())
+}
+
 /// Get a patient and their related resources.
 #[server]
 pub async fn get_patient_details(

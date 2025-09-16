@@ -57,8 +57,9 @@ fn App() -> Element {
 #[component]
 fn PatientTable() -> Element {
     let patients = use_server_future(|| serverfn::get_patients())?;
-    match &*patients.read_unchecked() {
-        Some(Ok(patients)) => rsx! {
+    let conditions = use_server_future(|| serverfn::get_conditions())?;
+    match (&*patients.read_unchecked(), &*conditions.read_unchecked()) {
+        (Some(Ok(patients)), Some(Ok(conditions))) => rsx! {
             table::Table {
                 columns: vec![
                     table::Column::new("ID").hidden(),
@@ -66,11 +67,29 @@ fn PatientTable() -> Element {
                     table::Column::new("Birth Date"),
                     table::Column::new("Deceased").categorical(),
                     table::Column::new("Address"),
+                    table::Column::new("Neoplasms (ICD-10-GM codes)"),
                 ],
                 data: patients
                     .iter()
                     .map(|p| {
-                        vec![p.id.to_string(), p.gender(), p.birth_date(), p.deceased(), p.address()]
+                        vec![
+                            p.id.to_string(),
+                            p.gender(),
+                            p.birth_date(),
+                            p.deceased(),
+                            p.address(),
+                            conditions
+                                .iter()
+                                .filter(|c| c.subject_patient_id().as_ref() == Some(&p.id))
+                                .filter(|c| c.is_neoplasm())
+                                .filter_map(|c| {
+                                    c.code
+                                        .code_in_system("http://fhir.de/CodeSystem/bfarm/icd-10-gm")
+                                })
+                                .sorted()
+                                .dedup()
+                                .join(", "),
+                        ]
                     })
                     .collect(),
                 ondetail: {
@@ -82,8 +101,9 @@ fn PatientTable() -> Element {
                 },
             }
         },
-        Some(Err(e)) => rsx! { "Error loading patients: {e:#}" },
-        None => rsx! { "Loading..." },
+        (Some(Err(e)), _) => rsx! { "Error loading patients: {e:#}" },
+        (_, Some(Err(e))) => rsx! { "Error loading conditions: {e:#}" },
+        (None, _) | (_, None) => rsx! { "Loading..." },
     }
 }
 
