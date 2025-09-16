@@ -14,7 +14,7 @@ pub struct Config {
 
 static CONFIG: std::sync::OnceLock<Config> = std::sync::OnceLock::new();
 
-/// Load the configuration from scout.toml. Should be called once on server startup.
+/// Load the configuration from scout.toml. Called once on server startup.
 pub fn load_config() -> anyhow::Result<()> {
     let config_str = std::fs::read_to_string("scout.toml")?;
     let config = toml::from_str(&config_str)?;
@@ -26,6 +26,7 @@ pub fn config() -> &'static Config {
     CONFIG.get().expect("Config should be loaded before use")
 }
 
+/// A map of code system URL to a map of code to display string.
 type CodeMaps = HashMap<String, HashMap<String, String>>;
 
 static CODE_MAPS: std::sync::OnceLock<CodeMaps> = std::sync::OnceLock::new();
@@ -43,6 +44,7 @@ struct CodeSystemConcept {
     display: String,
 }
 
+/// Load all code systems from the codesystems directory. Called once on server startup.
 pub fn load_code_maps() -> anyhow::Result<()> {
     let mut code_maps = HashMap::new();
     for entry in std::fs::read_dir("codesystems")? {
