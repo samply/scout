@@ -152,7 +152,7 @@ impl From<RawCoding> for Coding {
         }: RawCoding,
     ) -> Coding {
         if let (Some(code), Some(system)) = (&code, &system) {
-            display = crate::server::code_maps()
+            display = crate::server::CODE_MAPS
                 .get(system)
                 .and_then(|map| map.get(code))
                 .cloned()

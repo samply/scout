@@ -21,16 +21,7 @@ fn main() {
     dioxus::logger::initialize_default();
 
     #[cfg(feature = "server")]
-    if let Err(e) = server::load_config() {
-        tracing::error!("Failed to load config: {e}");
-        std::process::exit(1);
-    }
-
-    #[cfg(feature = "server")]
-    if let Err(e) = server::load_code_maps() {
-        tracing::error!("Failed to load code maps: {e}");
-        std::process::exit(1);
-    }
+    std::sync::LazyLock::force(&server::CONFIG);
 
     dioxus::launch(App);
 }
