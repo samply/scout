@@ -1,5 +1,6 @@
 use dioxus::prelude::*;
 use itertools::Itertools;
+use tracing::Level;
 
 mod fhir;
 mod server;
@@ -18,7 +19,7 @@ enum Route {
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
 
 fn main() {
-    dioxus::logger::initialize_default();
+    dioxus::logger::init(Level::INFO).expect("Failed to initialize logger");
 
     #[cfg(feature = "server")]
     std::sync::LazyLock::force(&server::CONFIG);
