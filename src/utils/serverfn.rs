@@ -1,5 +1,6 @@
-use crate::fhir;
-use crate::server;
+use crate::fhir::{condition, patient, resources};
+
+use dioxus::prelude::server;
 use dioxus::prelude::*;
 
 pub trait RequestBuilderExt {
@@ -18,7 +19,7 @@ impl crate::serverfn::RequestBuilderExt for reqwest::RequestBuilder {
 }
 
 #[server]
-pub async fn get_patients() -> Result<Vec<fhir::Patient>, ServerFnError> {
+pub async fn get_patients() -> Result<Vec<patient::Patient>, ServerFnError> {
     let url = format!("{}/Patient?_count=10000", server::CONFIG.fhir_base_url);
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(server::CONFIG.accept_invalid_certs)
@@ -29,7 +30,7 @@ pub async fn get_patients() -> Result<Vec<fhir::Patient>, ServerFnError> {
         .send()
         .await?
         .error_for_status()?
-        .json::<fhir::FhirBundle<fhir::Patient>>()
+        .json::<resources::FhirBundle<patient::Patient>>()
         .await?;
     Ok(bundle
         .entry
@@ -39,7 +40,7 @@ pub async fn get_patients() -> Result<Vec<fhir::Patient>, ServerFnError> {
 }
 
 #[server]
-pub async fn get_conditions() -> Result<Vec<fhir::Condition>, ServerFnError> {
+pub async fn get_conditions() -> Result<Vec<condition::Condition>, ServerFnError> {
     let url = format!("{}/Condition?_count=10000", server::CONFIG.fhir_base_url);
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(server::CONFIG.accept_invalid_certs)
@@ -50,7 +51,7 @@ pub async fn get_conditions() -> Result<Vec<fhir::Condition>, ServerFnError> {
         .send()
         .await?
         .error_for_status()?
-        .json::<fhir::FhirBundle<fhir::Condition>>()
+        .json::<resources::FhirBundle<condition::Condition>>()
         .await?;
     Ok(bundle
         .entry
@@ -63,7 +64,7 @@ pub async fn get_conditions() -> Result<Vec<fhir::Condition>, ServerFnError> {
 #[server]
 pub async fn get_patient_details(
     id: String,
-) -> Result<(fhir::Patient, fhir::MixedBundle), ServerFnError> {
+) -> Result<(patient::Patient, resources::MixedBundle), ServerFnError> {
     let url = format!(
         "{}/Patient/{}/$everything",
         server::CONFIG.fhir_base_url,
@@ -78,14 +79,14 @@ pub async fn get_patient_details(
         .send()
         .await?
         .error_for_status()?
-        .json::<fhir::MixedBundle>()
+        .json::<resources::MixedBundle>()
         .await?;
 
     let patient = bundle
         .entry
         .iter()
         .find_map(|entry| {
-            if let fhir::Resource::Patient(patient) = &entry.resource {
+            if let resources::Resource::Patient(patient) = &entry.resource {
                 Some(patient.clone())
             } else {
                 None

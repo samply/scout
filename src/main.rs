@@ -1,10 +1,11 @@
+use crate::fhir::{code, resources};
 use dioxus::prelude::*;
 use itertools::Itertools;
+use utils::serverfn;
+use utils::table;
 
-mod fhir;
-mod server;
-mod serverfn;
-mod table;
+pub mod fhir;
+mod utils;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -99,7 +100,7 @@ fn PatientTable() -> Element {
 }
 
 #[component]
-fn OptionalChip(chip: Option<fhir::Chip>) -> Element {
+fn OptionalChip(chip: Option<code::Chip>) -> Element {
     rsx! {
         if let Some(chip) = chip {
             " "
@@ -113,7 +114,7 @@ fn OptionalChip(chip: Option<fhir::Chip>) -> Element {
 }
 
 #[component]
-fn CodeableConcept(codeable_concept: fhir::CodeableConcept) -> Element {
+fn CodeableConcept(codeable_concept: code::CodeableConcept) -> Element {
     // Put user-selected coding first
     let codings = codeable_concept
         .coding
@@ -166,7 +167,7 @@ fn PatientView(id: String) -> Element {
                     .circular_tuple_windows()
                 {
                     match entry.resource {
-                        fhir::Resource::Encounter(ref encounter) => {
+                        resources::Resource::Encounter(ref encounter) => {
                             rsx! {
                                 div { class: "my-3 p-2 border rounded border-gray-300 bg-gray-50",
                                     p {
@@ -182,7 +183,7 @@ fn PatientView(id: String) -> Element {
                                 }
                             }
                         }
-                        fhir::Resource::Condition(ref condition) => {
+                        resources::Resource::Condition(ref condition) => {
                             rsx! {
                                 div {
                                     class: "my-3 p-2 border rounded",
@@ -217,7 +218,7 @@ fn PatientView(id: String) -> Element {
                                 }
                             }
                         }
-                        fhir::Resource::Procedure(ref procedure) => {
+                        resources::Resource::Procedure(ref procedure) => {
                             rsx! {
                                 div {
                                     class: "my-3 p-2 border rounded",
@@ -252,7 +253,7 @@ fn PatientView(id: String) -> Element {
                                 }
                             }
                         }
-                        fhir::Resource::Observation(ref observation) => {
+                        resources::Resource::Observation(ref observation) => {
                             rsx! {
                                 div { class: "my-3 p-2 border rounded border-gray-300 bg-gray-50",
                                     p {
