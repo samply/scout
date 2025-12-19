@@ -1,8 +1,8 @@
 use crate::fhir::{condition, patient, resources};
-use dioxus::prelude::server;
-use dioxus::prelude::*;
 #[cfg(feature = "server")]
 use crate::utils::config;
+use dioxus::prelude::server;
+use dioxus::prelude::*;
 
 pub trait RequestBuilderExt {
     fn with_auth(self) -> Self;

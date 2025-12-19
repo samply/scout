@@ -1,6 +1,6 @@
-mod utils;
 mod controller;
 mod fhir;
+mod utils;
 
 #[cfg(feature = "server")]
 fn main() {
@@ -9,7 +9,6 @@ fn main() {
 
     dioxus::launch(controller::App);
 }
-
 
 #[cfg(not(feature = "server"))]
 fn main() {

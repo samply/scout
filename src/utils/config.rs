@@ -35,7 +35,8 @@ pub static CODE_MAPS: std::sync::LazyLock<CodeMaps> = std::sync::LazyLock::new(|
 
     // Load all code systems from the codesystems directory.
     let mut code_maps = HashMap::new();
-    for entry in std::fs::read_dir("../codesystems").expect("Failed to read codesystems directory") {
+    for entry in std::fs::read_dir("../codesystems").expect("Failed to read codesystems directory")
+    {
         let entry = entry.expect("Failed to read codesystems directory entry");
         let path = entry.path();
         if path.extension().and_then(|s| s.to_str()) == Some("json") {

@@ -1,6 +1,6 @@
+use crate::utils;
 use serde::{Deserialize, Serialize};
 use std::fmt;
-use crate::utils;
 
 /// Helper struct for looking up code display names during deserialization. On the server side we
 /// deserialize as `RawCoding` and then convert to `Coding`. The `From` implementation handles

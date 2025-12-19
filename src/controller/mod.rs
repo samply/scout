@@ -1,14 +1,14 @@
+use crate::fhir::code;
+use crate::fhir::resources::Resource;
+#[cfg(feature = "server")]
+use crate::utils::serverfn;
+use crate::utils::table;
 use dioxus::core_macro::{component, rsx};
 use dioxus::dioxus_core::Element;
 use dioxus::document;
 use dioxus::hooks::use_signal;
 use dioxus::prelude::*;
-use crate::fhir::resources::Resource;
-use crate::fhir::code;
-use crate::utils::table;
 use itertools::Itertools;
-#[cfg(feature = "server")]
-use crate::utils::serverfn;
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
 
 #[derive(Debug, Clone, Routable, PartialEq)]
@@ -19,7 +19,6 @@ enum Route {
     #[route("/patient/:id")]
     PatientView { id: String },
 }
-
 
 pub fn format_timestamp(timestamp: jiff::Timestamp) -> String {
     let zoned = timestamp.to_zoned(jiff::tz::TimeZone::system());
