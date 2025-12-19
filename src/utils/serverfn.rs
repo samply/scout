@@ -1,17 +1,18 @@
 use crate::fhir::{condition, patient, resources};
-
 use dioxus::prelude::server;
 use dioxus::prelude::*;
+#[cfg(feature = "server")]
+use crate::utils::config;
 
 pub trait RequestBuilderExt {
     fn with_auth(self) -> Self;
 }
 
 #[cfg(feature = "server")]
-impl crate::serverfn::RequestBuilderExt for reqwest::RequestBuilder {
+impl crate::utils::serverfn::RequestBuilderExt for reqwest::RequestBuilder {
     fn with_auth(self) -> Self {
-        if let Some(fhir_username) = &server::CONFIG.fhir_username {
-            self.basic_auth(fhir_username, server::CONFIG.fhir_password.as_deref())
+        if let Some(fhir_username) = &config::CONFIG.fhir_username {
+            self.basic_auth(fhir_username, config::CONFIG.fhir_password.as_deref())
         } else {
             self
         }
@@ -20,9 +21,9 @@ impl crate::serverfn::RequestBuilderExt for reqwest::RequestBuilder {
 
 #[server]
 pub async fn get_patients() -> Result<Vec<patient::Patient>, ServerFnError> {
-    let url = format!("{}/Patient?_count=10000", server::CONFIG.fhir_base_url);
+    let url = format!("{}/Patient?_count=10000", config::CONFIG.fhir_base_url);
     let client = reqwest::Client::builder()
-        .danger_accept_invalid_certs(server::CONFIG.accept_invalid_certs)
+        .danger_accept_invalid_certs(config::CONFIG.accept_invalid_certs)
         .build()?;
     let bundle = client
         .get(&url)
@@ -41,9 +42,9 @@ pub async fn get_patients() -> Result<Vec<patient::Patient>, ServerFnError> {
 
 #[server]
 pub async fn get_conditions() -> Result<Vec<condition::Condition>, ServerFnError> {
-    let url = format!("{}/Condition?_count=10000", server::CONFIG.fhir_base_url);
+    let url = format!("{}/Condition?_count=10000", config::CONFIG.fhir_base_url);
     let client = reqwest::Client::builder()
-        .danger_accept_invalid_certs(server::CONFIG.accept_invalid_certs)
+        .danger_accept_invalid_certs(config::CONFIG.accept_invalid_certs)
         .build()?;
     let bundle = client
         .get(&url)
@@ -67,11 +68,11 @@ pub async fn get_patient_details(
 ) -> Result<(patient::Patient, resources::MixedBundle), ServerFnError> {
     let url = format!(
         "{}/Patient/{}/$everything",
-        server::CONFIG.fhir_base_url,
+        config::CONFIG.fhir_base_url,
         id
     );
     let client = reqwest::Client::builder()
-        .danger_accept_invalid_certs(server::CONFIG.accept_invalid_certs)
+        .danger_accept_invalid_certs(config::CONFIG.accept_invalid_certs)
         .build()?;
     let bundle = client
         .get(&url)

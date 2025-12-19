@@ -1,5 +1,3 @@
-#![cfg(feature = "server")]
-
 use std::collections::HashMap;
 
 #[derive(Debug, serde::Deserialize)]
@@ -13,7 +11,7 @@ pub struct Config {
 }
 
 pub static CONFIG: std::sync::LazyLock<Config> = std::sync::LazyLock::new(|| {
-    let config_str = std::fs::read_to_string("scout.toml").expect("Failed to read config file");
+    let config_str = std::fs::read_to_string("../scout.toml").expect("Failed to read config file");
     let config = toml::from_str(&config_str).expect("Failed to parse config file");
     config
 });
@@ -37,7 +35,7 @@ pub static CODE_MAPS: std::sync::LazyLock<CodeMaps> = std::sync::LazyLock::new(|
 
     // Load all code systems from the codesystems directory.
     let mut code_maps = HashMap::new();
-    for entry in std::fs::read_dir("codesystems").expect("Failed to read codesystems directory") {
+    for entry in std::fs::read_dir("../codesystems").expect("Failed to read codesystems directory") {
         let entry = entry.expect("Failed to read codesystems directory entry");
         let path = entry.path();
         if path.extension().and_then(|s| s.to_str()) == Some("json") {

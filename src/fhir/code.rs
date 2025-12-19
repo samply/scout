@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fmt;
+use crate::utils;
 
 /// Helper struct for looking up code display names during deserialization. On the server side we
 /// deserialize as `RawCoding` and then convert to `Coding`. The `From` implementation handles
@@ -35,7 +36,7 @@ impl From<RawCoding> for Coding {
         }: RawCoding,
     ) -> Coding {
         if let (Some(code), Some(system)) = (&code, &system) {
-            display = crate::server::CODE_MAPS
+            display = utils::config::CODE_MAPS
                 .get(system)
                 .and_then(|map| map.get(code))
                 .cloned()
