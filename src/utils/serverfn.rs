@@ -3,6 +3,7 @@ use crate::fhir::{condition, patient, resources};
 use crate::utils::config;
 use dioxus::prelude::server;
 use dioxus::prelude::*;
+use tracing::debug;
 
 pub trait RequestBuilderExt {
     fn with_auth(self) -> Self;
@@ -22,17 +23,23 @@ impl crate::utils::serverfn::RequestBuilderExt for reqwest::RequestBuilder {
 #[server]
 pub async fn get_patients() -> Result<Vec<patient::Patient>, ServerFnError> {
     let url = format!("{}/Patient?_count=10000", config::CONFIG.fhir_base_url);
+    debug!("Fetching patients from {}", url);
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(config::CONFIG.accept_invalid_certs)
-        .build()?;
+        .build()
+        .map_err(anyhow::Error::from)?;
     let bundle = client
         .get(&url)
         .with_auth()
         .send()
-        .await?
-        .error_for_status()?
+        .await
+        .map_err(anyhow::Error::from)?
+        .error_for_status()
+        .map_err(anyhow::Error::from)?
         .json::<resources::FhirBundle<patient::Patient>>()
-        .await?;
+        .await
+        .map_err(anyhow::Error::from)?;
+    debug!("Bundle loaded {:?}", bundle.entry);
     Ok(bundle
         .entry
         .into_iter()
@@ -43,17 +50,23 @@ pub async fn get_patients() -> Result<Vec<patient::Patient>, ServerFnError> {
 #[server]
 pub async fn get_conditions() -> Result<Vec<condition::Condition>, ServerFnError> {
     let url = format!("{}/Condition?_count=10000", config::CONFIG.fhir_base_url);
+    debug!("Fetching conditions from {}", url);
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(config::CONFIG.accept_invalid_certs)
-        .build()?;
+        .build()
+        .map_err(anyhow::Error::from)?;
     let bundle = client
         .get(&url)
         .with_auth()
         .send()
-        .await?
-        .error_for_status()?
+        .await
+        .map_err(anyhow::Error::from)?
+        .error_for_status()
+        .map_err(anyhow::Error::from)?
         .json::<resources::FhirBundle<condition::Condition>>()
-        .await?;
+        .await
+        .map_err(anyhow::Error::from)?;
+    debug!("Bundle loaded {:?}", bundle.entry);
     Ok(bundle
         .entry
         .into_iter()
@@ -73,15 +86,19 @@ pub async fn get_patient_details(
     );
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(config::CONFIG.accept_invalid_certs)
-        .build()?;
+        .build()
+        .map_err(anyhow::Error::from)?;
     let bundle = client
         .get(&url)
         .with_auth()
         .send()
-        .await?
-        .error_for_status()?
+        .await
+        .map_err(anyhow::Error::from)?
+        .error_for_status()
+        .map_err(anyhow::Error::from)?
         .json::<resources::MixedBundle>()
-        .await?;
+        .await
+        .map_err(anyhow::Error::from)?;
 
     let patient = bundle
         .entry

@@ -9,6 +9,8 @@ use dioxus::document;
 use dioxus::hooks::use_signal;
 use dioxus::prelude::*;
 use itertools::Itertools;
+use tracing::info;
+
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
 
 #[derive(Debug, Clone, Routable, PartialEq)]
@@ -28,6 +30,7 @@ pub fn format_timestamp(timestamp: jiff::Timestamp) -> String {
 
 #[component]
 pub fn App() -> Element {
+    info!("Starting Server");
     // Load polyfill for CSS anchor positioning if needed (https://github.com/oddbird/css-anchor-positioning)
     document::eval(
         "if (!('anchorName' in document.documentElement.style)) import('https://unpkg.com/@oddbird/css-anchor-positioning/dist/css-anchor-positioning-fn.js').then(mod => {window.CSSAnchorPositioning = mod.default; window.CSSAnchorPositioning()});",
