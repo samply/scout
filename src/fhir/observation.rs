@@ -8,12 +8,12 @@ use std::fmt;
 #[serde(rename_all = "camelCase")]
 pub struct Observation {
     pub id: String,
-    pub identifier: Vec<Identifier>,
-    pub status: String,
-    pub category: Vec<CodeableConcept>,
+    pub identifier: Option<Vec<Identifier>>,
+    pub status: Option<String>,
+    pub category: Option<Vec<CodeableConcept>>,
     pub code: CodeableConcept,
     pub encounter: Option<Reference>,
-    pub effective_date_time: jiff::Timestamp,
+    pub effective_date_time: Option<jiff::Timestamp>,
     pub issued: Option<jiff::Timestamp>,
     pub value_quantity: Option<Quantity>,
     pub data_absent_reason: Option<CodeableConcept>,
@@ -31,22 +31,23 @@ pub struct ObservationReferenceRange {
 }
 
 impl Observation {
-    pub fn identifier(&self) -> String {
-        self.identifier
-            .iter()
-            .find(|id| {
-                id.r#type.as_ref().and_then(|r#type| {
-                    r#type.code_in_system("http://terminology.hl7.org/CodeSystem/v2-0203")
-                }) == Some("OBI".into())
-            })
-            .and_then(|id| id.value.clone())
-            .unwrap_or_default()
+    pub fn identifier(&self) -> Option<String> {
+        self.identifier.as_ref()?.iter().find_map(|id| {
+            let is_obi = id
+                .r#type
+                .as_ref()
+                .and_then(|t| t.code_in_system("http://terminology.hl7.org/CodeSystem/v2-0203"))
+                .as_deref()
+                == Some("OBI");
+
+            if is_obi { id.value.clone() } else { None }
+        })
     }
 
     /// http://hl7.org/fhir/ValueSet/observation-status
     #[rustfmt::skip]
     pub fn status_chip(&self) -> Option<Chip> {
-        match self.status.as_str() {
+        match self.status.as_deref().unwrap_or("") {
             "registered" => Some(Chip::new("bg-yellow-100 border-yellow-500", "Registered", "The existence of the observation is registered, but there is no result yet available.")),
             "preliminary" => Some(Chip::new("bg-yellow-100 border-yellow-500", "Preliminary", "This is an initial or interim observation: data may be incomplete or unverified.")),
             "final" => Some(Chip::new("bg-green-100 border-green-500", "Final", "The observation is complete and there are no further actions needed. Additional information such as 'released', 'signed', etc would be represented using Provenance.")),
@@ -59,12 +60,17 @@ impl Observation {
         }
     }
 
-    pub fn category(&self) -> String {
-        self.category
-            .iter()
-            .map(|category| category.to_string())
-            .collect::<Vec<_>>()
-            .join(", ")
+    pub fn category(&self) -> Option<String> {
+        match self.category.as_ref() {
+            Some(category) => {
+                Some(category
+                    .iter()
+                    .map(|category| category.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", "))
+            },
+            None => None,
+        }
     }
 
     pub fn code(&self) -> String {
@@ -168,9 +174,7 @@ impl Observation {
             })
     }
 
-    pub fn timeline_timestamp(&self) -> Option<jiff::Timestamp> {
-        Some(self.effective_date_time)
-    }
+    pub fn timeline_timestamp(&self) -> Option<jiff::Timestamp> { self.effective_date_time }
 }
 
 // pub trait TimelineEvent {

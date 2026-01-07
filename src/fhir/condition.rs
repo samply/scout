@@ -14,7 +14,7 @@ pub struct Condition {
     pub subject: Reference,
     pub onset_period: Option<Period>,
     pub onset_date_time: Option<jiff::Timestamp>,
-    pub recorded_date: jiff::Timestamp,
+    pub recorded_date: Option<jiff::Timestamp>,
     pub note: Option<Vec<Annotation>>,
 }
 
@@ -92,7 +92,7 @@ impl Condition {
     }
 
     pub fn timeline_timestamp(&self) -> Option<jiff::Timestamp> {
-        Some(self.recorded_date)
+        self.recorded_date
     }
 
     pub fn is_neoplasm(&self) -> bool {

@@ -84,6 +84,7 @@ pub async fn get_patient_details(
         config::CONFIG.fhir_base_url,
         id
     );
+    debug!("Fetching patient details from {}", url);
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(config::CONFIG.accept_invalid_certs)
         .build()
@@ -99,6 +100,7 @@ pub async fn get_patient_details(
         .json::<resources::MixedBundle>()
         .await
         .map_err(anyhow::Error::from)?;
+    debug!("Bundle loaded {:?}", bundle.entry);
 
     let patient = bundle
         .entry

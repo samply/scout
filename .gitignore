@@ -10,3 +10,4 @@
 /assets/tailwind.css
 /scout.toml
 .idea/
+Cargo.lock
